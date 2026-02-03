@@ -294,7 +294,7 @@ def evaluate_run():
 
     summary_lines = [
         "=" * 86,
-        f\"{'Editor':<25} | {'Reliability (mean+/-std)':<26} | {'Generality (mean+/-std)':<26} | {'Runs':<4}\",
+        f"{'Editor':<25} | {'Reliability (mean+/-std)':<26} | {'Generality (mean+/-std)':<26} | {'Runs':<4}\n",
         "-" * 86,
     ]
     for res in results:
