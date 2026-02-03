@@ -1,5 +1,9 @@
 # CoRSA: Conflict-Resolving and Sharpness-Aware Minimization for Generalized Knowledge Editing with Multiple Updates
 
+**Authors:** [Duy Nguyen](https://duykhuongnguyen.github.io/), [Hanqi Xiao](https://hanqixiao.github.io/), [Archiki Prasad](https://archiki.github.io/), [Elias Stengel-Eskin](https://esteng.github.io/), [Hyunji Lee](https://amy-hyunji.github.io/), [Mohit Bansal](https://www.cs.unc.edu/~mbansal/)
+
+![CoRSA Overview](assets/fig1.png)
+
 ## Setup
 
 ```bash
@@ -8,53 +12,44 @@ source .venv/bin/activate
 uv pip install torch transformers datasets peft trl vllm
 ```
 
-## Configs for Training and Evaluation
+## Configuration
 
-The default config is at:
+All configurations are defined in `src/configs/default.json`. Key fields:
 
-`src/configs/default.json`
+- `model.name`: Model ID or local path
+- `dataset`: Dataset name/split/source
+- `method.name`: Training method (`lora`, `sam`, or `corsa`)
+- `training`: Batch size, epochs, learning rate, output directory, etc.
+- `evaluation`: vLLM settings
 
-Key fields:
-- `model.name`: Model ID or local path.
-- `dataset`: dataset name/split/source.
-- `method.name`: method used for training (lora, sam, corsa).
-- `training`: batch size, epochs, LR, output root, etc.
-- `evaluation`: vLLM settings.
+## Training
 
-## Train
+### Quick Start
 
-Example for training CoRSA on CounterFact:
-
-```bash
-python src/train.py --config src/configs/default.json
-```
-
-Training outputs under:
-
-```
-outputs/<model>/<dataset>/<method>/
-```
-
-Each run directory includes:
-- `config.json`: full resolved run config
-- `metadata.json`: method + dataset + model summary
-- model weights / adapter artifacts
-
-### Train CoRSA
+Train CoRSA on CounterFact:
 
 ```bash
 python src/train.py --config src/configs/default.json --method corsa
 ```
 
-## Evaluate
+### Output
 
-Evaluation uses vLLM and reads the run’s metadata to select the correct base model + LoRA adapter.
+Training outputs are saved to `outputs/<model>/<dataset>/<method>/` and include:
+
+- `config.json`: Full resolved configuration
+- `metadata.json`: Method, dataset, and model summary
+- Model weights and LoRA adapter artifacts
+
+## Evaluation
+
+Evaluate with the trained adapter:
 
 ```bash
 python src/evaluate.py --config src/configs/default.json --run_dir outputs/<model>/<dataset>/<method>/
 ```
 
-Outputs are written to the run directory:
-- `generations*.jsonl`: per-sample generations
-- `generations*.csv`: generations and correctness
-- `results*.csv`: summary table
+### Output Files
+
+- `generations*.jsonl`: Per-sample generations
+- `generations*.csv`: Generations with correctness labels
+- `results*.csv`: Summary results table
