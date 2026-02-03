@@ -127,7 +127,7 @@ class SAMTrainer(DPOTrainer):
             grads.append(g)
             params.append(p)
             g2 = (g.float() * g.float()).sum()
-            sq_sum = g2 if sq_sum is None else (sq_sum + g2)
+            sq_sum = g2 if sq_sum is None else (sq_sum + g2.to(sq_sum.device))
 
         if sq_sum is None:
             return {}, torch.zeros((), device=model.device)
@@ -143,7 +143,7 @@ class SAMTrainer(DPOTrainer):
             g = p.grad
             if g.is_sparse:
                 g = g.to_dense()
-            eps = (g * scale).to(dtype=p.data.dtype)
+            eps = (g * scale.to(g.device)).to(dtype=p.data.dtype)
             p.add_(eps)
             eps_dict[p] = eps
 
@@ -254,7 +254,7 @@ class PCSAMTrainer(DPOTrainer):
             grads.append(g)
             params.append(p)
             g2 = (g.float() * g.float()).sum()
-            sq_sum = g2 if sq_sum is None else (sq_sum + g2)
+            sq_sum = g2 if sq_sum is None else (sq_sum + g2.to(sq_sum.device))
 
         if sq_sum is None:
             return {}, torch.zeros((), device=model.device)
@@ -270,7 +270,7 @@ class PCSAMTrainer(DPOTrainer):
             g = p.grad
             if g.is_sparse:
                 g = g.to_dense()
-            eps = (g * scale).to(dtype=p.data.dtype)
+            eps = (g * scale.to(g.device)).to(dtype=p.data.dtype)
             p.add_(eps)
             eps_dict[p] = eps
 
@@ -323,7 +323,7 @@ class PCSAMTrainer(DPOTrainer):
             ga_f = ga.float()
             gb_f = gb.float()
             v = (ga_f * gb_f).sum()
-            s = v if s is None else (s + v)
+            s = v if s is None else (s + v.to(s.device))
         return s if s is not None else torch.zeros((), device=g_list_a[0].device)
 
     def _pcgrad_merge(self, task_grads):
@@ -342,7 +342,7 @@ class PCSAMTrainer(DPOTrainer):
                 if dot_ij < 0:
                     denom = self._dot(proj[j], proj[j]) + self.pcgrad_eps
                     coeff = dot_ij / denom
-                    proj[i] = [gi - coeff * gj for gi, gj in zip(proj[i], proj[j])]
+                    proj[i] = [gi - coeff.to(gi.device) * gj.to(gi.device) for gi, gj in zip(proj[i], proj[j])] # Align device to gi, since we want proj[i] to be on the same device as before.
 
         merged = [torch.zeros_like(g) for g in proj[0]]
         for i in range(k):
