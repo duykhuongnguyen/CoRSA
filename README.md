@@ -24,11 +24,6 @@ All configurations are defined in `src/configs/default.json`. Key fields:
 
 ## Training
 
-### Requirements
-
-- **GPU Support**: Currently the training script only supports training on 1 GPU only
-- CUDA-compatible GPU with sufficient memory (typically 24GB+ recommended)
-
 ### Quick Start
 
 Train CoRSA on CounterFact:
@@ -59,7 +54,15 @@ python src/evaluate.py --config src/configs/default.json --run_dir outputs/<mode
 - `generations*.csv`: Generations with correctness labels
 - `results*.csv`: Summary results table
 
-## TODOs
+## Citation
 
-- [ ] Add support for multi-GPU training
-- [ ] Optimize memory usage for larger models
+If you find our work useful in your research, please cite our paper:
+
+```bibtex
+@article{nguyen2026conflict,
+	title={Conflict-Resolving and Sharpness-Aware Minimization for Generalized Knowledge Editing with Multiple Updates},
+	author={Nguyen, Duy and Xiao, Hanqi and Prasad, Archiki and Stengel-Eskin, Elias and Lee, Hyunji and Bansal, Mohit},
+	journal={arXiv preprint arXiv:2602.03696},
+	year={2026}
+}
+```
